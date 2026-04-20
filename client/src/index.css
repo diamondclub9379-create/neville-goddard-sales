@@ -1,0 +1,393 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  /* Celestial Mysticism Design Tokens */
+  /* Primary gold accent for spiritual luxury */
+  --primary: oklch(0.68 0.22 55);
+  --primary-foreground: oklch(0.1 0.01 0);
+  --sidebar-primary: oklch(0.68 0.22 55);
+  --sidebar-primary-foreground: oklch(0.1 0.01 0);
+  
+  /* Chart colors using gold and indigo palette */
+  --chart-1: oklch(0.68 0.22 55);
+  --chart-2: oklch(0.55 0.18 55);
+  --chart-3: oklch(0.35 0.12 260);
+  --chart-4: oklch(0.25 0.08 260);
+  --chart-5: oklch(0.15 0.05 260);
+  
+  --radius: 0.65rem;
+  
+  /* Deep space black background - representing infinite potential */
+  --background: oklch(0.08 0.01 260);
+  /* Cream/ivory foreground - soft and readable */
+  --foreground: oklch(0.95 0.01 65);
+  
+  /* Card styling - dark with subtle indigo tint */
+  --card: oklch(0.12 0.02 260);
+  --card-foreground: oklch(0.95 0.01 65);
+  
+  /* Popover styling */
+  --popover: oklch(0.12 0.02 260);
+  --popover-foreground: oklch(0.95 0.01 65);
+  
+  /* Secondary - deep indigo for bridging material and spiritual */
+  --secondary: oklch(0.25 0.08 260);
+  --secondary-foreground: oklch(0.95 0.01 65);
+  
+  /* Muted - subtle indigo tones */
+  --muted: oklch(0.20 0.05 260);
+  --muted-foreground: oklch(0.80 0.02 65);
+  
+  /* Accent - gold for highlights */
+  --accent: oklch(0.68 0.22 55);
+  --accent-foreground: oklch(0.1 0.01 0);
+  
+  /* Destructive - red for warnings */
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  
+  /* Border and input - subtle gold lines */
+  --border: oklch(0.30 0.06 55);
+  --input: oklch(0.15 0.03 260);
+  --ring: oklch(0.68 0.22 55);
+  
+  /* Sidebar styling */
+  --sidebar: oklch(0.12 0.02 260);
+  --sidebar-foreground: oklch(0.95 0.01 65);
+  --sidebar-accent: oklch(0.68 0.22 55);
+  --sidebar-accent-foreground: oklch(0.1 0.01 0);
+  --sidebar-border: oklch(0.30 0.06 55);
+  --sidebar-ring: oklch(0.68 0.22 55);
+}
+
+.dark {
+  --primary: oklch(0.68 0.22 55);
+  --primary-foreground: oklch(0.1 0.01 0);
+  --sidebar-primary: oklch(0.68 0.22 55);
+  --sidebar-primary-foreground: oklch(0.1 0.01 0);
+  --background: oklch(0.08 0.01 260);
+  --foreground: oklch(0.95 0.01 65);
+  --card: oklch(0.12 0.02 260);
+  --card-foreground: oklch(0.95 0.01 65);
+  --popover: oklch(0.12 0.02 260);
+  --popover-foreground: oklch(0.95 0.01 65);
+  --secondary: oklch(0.25 0.08 260);
+  --secondary-foreground: oklch(0.95 0.01 65);
+  --muted: oklch(0.20 0.05 260);
+  --muted-foreground: oklch(0.80 0.02 65);
+  --accent: oklch(0.68 0.22 55);
+  --accent-foreground: oklch(0.1 0.01 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.30 0.06 55);
+  --input: oklch(0.15 0.03 260);
+  --ring: oklch(0.68 0.22 55);
+  --chart-1: oklch(0.68 0.22 55);
+  --chart-2: oklch(0.55 0.18 55);
+  --chart-3: oklch(0.35 0.12 260);
+  --chart-4: oklch(0.25 0.08 260);
+  --chart-5: oklch(0.15 0.05 260);
+  --sidebar: oklch(0.12 0.02 260);
+  --sidebar-foreground: oklch(0.95 0.01 65);
+  --sidebar-accent: oklch(0.68 0.22 55);
+  --sidebar-accent-foreground: oklch(0.1 0.01 0);
+  --sidebar-border: oklch(0.30 0.06 55);
+  --sidebar-ring: oklch(0.68 0.22 55);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Sarabun', sans-serif;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    @apply cursor-pointer;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+  }
+  
+  .btn-cta {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+  }
+}
+
+@layer components {
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .flex {
+    min-height: 0;
+    min-width: 0;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      max-width: 1280px;
+    }
+  }
+  
+  /* Celestial Mysticism Custom Components */
+  
+  /* Gold accent border for premium feel */
+  .gold-border {
+    @apply border-accent border;
+  }
+  
+  /* Smooth fade-in animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+  }
+  
+  /* Subtle hover lift effect */
+  @keyframes liftHover {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-8px);
+    }
+  }
+  
+  .hover-lift {
+    transition: all 0.3s ease;
+  }
+  
+  .hover-lift:hover {
+    animation: liftHover 0.3s ease forwards;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+  }
+  
+  /* Starfield background effect */
+  .starfield {
+    background-image: 
+      radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 60px 70px, #fff, rgba(0,0,0,0)),
+      radial-gradient(1px 1px at 50px 50px, #fff, rgba(0,0,0,0)),
+      radial-gradient(1px 1px at 130px 80px, #fff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 90px 10px, #fff, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+  }
+
+  /* ── Glassmorphism card ── */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(212, 175, 55, 0.18);
+    border-radius: 1rem;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(212, 175, 55, 0.45);
+    box-shadow: 0 8px 40px rgba(212, 175, 55, 0.18), 0 2px 12px rgba(0,0,0,0.4);
+    transform: translateY(-6px) scale(1.01);
+  }
+
+  /* ── Stats card with gradient border ── */
+  .stats-card {
+    position: relative;
+    background: linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(15,15,35,0.9) 100%);
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+  .stats-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 1rem;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(212,175,55,0.6), rgba(212,175,55,0.1), rgba(212,175,55,0.4));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* ── Gradient text ── */
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 50%, #f6d365 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .text-gradient-amber {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 40%, #fde68a 80%, #fbbf24 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Section wave divider ── */
+  .section-divider {
+    position: relative;
+    overflow: hidden;
+  }
+  .section-divider::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: inherit;
+    clip-path: ellipse(55% 100% at 50% 0%);
+  }
+
+  /* ── Book card badge ── */
+  .book-badge {
+    @apply absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold tracking-wide uppercase z-10;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.06em;
+  }
+  .book-badge-new {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    box-shadow: 0 2px 8px rgba(16,185,129,0.4);
+  }
+  .book-badge-hot {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    box-shadow: 0 2px 8px rgba(239,68,68,0.4);
+  }
+  .book-badge-recommended {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    box-shadow: 0 2px 8px rgba(245,158,11,0.4);
+  }
+
+  /* ── Price tag ── */
+  .price-tag {
+    background: linear-gradient(135deg, rgba(251,191,36,0.15), rgba(245,158,11,0.05));
+    border: 1px solid rgba(251,191,36,0.3);
+    border-radius: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    display: inline-block;
+  }
+
+  /* ── Shimmer animation for loading ── */
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  .shimmer-text {
+    background: linear-gradient(90deg, #fbbf24 0%, #fde68a 40%, #fbbf24 80%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s linear infinite;
+  }
+
+  /* ── Pulse glow for CTA ── */
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 12px rgba(251,191,36,0.4); }
+    50% { box-shadow: 0 0 28px rgba(251,191,36,0.7), 0 0 50px rgba(251,191,36,0.2); }
+  }
+  .cta-glow {
+    animation: pulseGlow 2.5s ease-in-out infinite;
+  }
+
+  /* ── Scroll reveal base ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── LINE chat widget slide-up ── */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0)   scale(1); }
+  }
+  .animate-slide-up {
+    animation: slideUp 0.25s ease-out forwards;
+  }
+}
