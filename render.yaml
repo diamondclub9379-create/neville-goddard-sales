@@ -1,0 +1,59 @@
+# Render Blueprint — one-click deploy spec
+# https://render.com/docs/blueprint-spec
+#
+# Click to deploy (after pushing this file to GitHub):
+# https://render.com/deploy?repo=https://github.com/diamondclub9379-create/neville-goddard-sales
+
+services:
+  - type: web
+    name: neville-goddard-sales
+    runtime: node
+    plan: free
+    region: singapore
+    branch: main
+    # Use corepack to install pnpm@10.4.1 (matches packageManager in package.json)
+    buildCommand: corepack enable && corepack prepare pnpm@10.4.1 --activate && pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      # ───────── These you paste manually after the service is created ─────────
+      - key: DATABASE_URL
+        sync: false
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: ADMIN_EMAILS
+        sync: false
+      # ─── Optional (features degrade gracefully if unset) ─────────────────────
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: OWNER_EMAIL
+        sync: false
+      - key: NOTIFICATION_FROM_EMAIL
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: S3_ENDPOINT
+        sync: false
+      - key: S3_REGION
+        sync: false
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
+      - key: S3_PUBLIC_URL_BASE
+        sync: false
