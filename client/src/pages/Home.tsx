@@ -1162,10 +1162,11 @@ export default function Home() {
             <div className="space-y-6">
               <div className="relative rounded-2xl overflow-hidden border border-amber-400/20 shadow-2xl">
                 <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Neville_Goddard.jpg/440px-Neville_Goddard.jpg"
+                  src="/images/people/neville-goddard.jpg"
                   alt="Neville Goddard"
                   className="w-full object-cover"
                   style={{maxHeight: "380px", objectPosition: "top"}}
+                  loading="lazy"
                 />
                 <div className="absolute inset-0" style={{background: "linear-gradient(to top, rgba(15,23,42,0.8) 0%, transparent 60%)"}} />
                 <div className="absolute bottom-4 left-4 right-4">
