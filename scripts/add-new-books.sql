@@ -1,14 +1,25 @@
 -- ─────────────────────────────────────────────────────────────────────────────
--- Add 3 new Neville Goddard books scraped from Shopee shop (coachwanchai)
--- Run against TiDB production. Safe to re-run: uses ON DUPLICATE KEY UPDATE
--- on the unique `slug` column so it becomes an upsert.
+-- Migration: add 3 new Neville books + reset 17 existing books to LIST prices
+--
+-- Background:
+--   Existing 17 books in DB have Shopee DISCOUNTED prices, which makes it
+--   impossible to run further promos without double-discounting. This script
+--   resets all books to their LIST price (ราคาปก) and nulls discountPrice so
+--   the owner has a clean slate for future promotions.
+--
+-- List prices computed from Shopee current price (all items flat -26%) and
+-- rounded to nearest 10 THB. 3 new books captured directly from Shopee.
 --
 -- Run via:
 --   1) TiDB Cloud Console → SQL Editor → paste + execute, OR
 --   2) node scripts/import-dump.mjs scripts/add-new-books.sql "<PROD_DATABASE_URL>"
 -- ─────────────────────────────────────────────────────────────────────────────
 
-SELECT 'starting add-new-books' AS status;
+SELECT 'starting migration' AS status;
+
+-- ══════════════════════════════════════════════════════════════════════════════
+-- PART A — INSERT 3 new books (upsert by slug)
+-- ══════════════════════════════════════════════════════════════════════════════
 
 INSERT INTO `products`
   (`titleTh`, `titleEn`, `slug`, `description`, `descriptionTh`, `price`, `discountPrice`, `imageUrl`, `purchaseLink`, `category`, `isActive`)
@@ -64,6 +75,32 @@ ON DUPLICATE KEY UPDATE
   `category`      = VALUES(`category`),
   `isActive`      = VALUES(`isActive`);
 
-SELECT id, slug, titleTh, titleEn, price, category
+-- ══════════════════════════════════════════════════════════════════════════════
+-- PART B — RESET 17 existing books to LIST price (clears discountPrice → NULL)
+-- ══════════════════════════════════════════════════════════════════════════════
+
+UPDATE `products` SET `price` = '400.00', `discountPrice` = NULL WHERE `slug` = 'feeling-is-the-secret';
+UPDATE `products` SET `price` = '550.00', `discountPrice` = NULL WHERE `slug` = 'money-manifestation';
+UPDATE `products` SET `price` = '750.00', `discountPrice` = NULL WHERE `slug` = 'faster-manifestation';
+UPDATE `products` SET `price` = '950.00', `discountPrice` = NULL WHERE `slug` = 'law-of-assumption';
+UPDATE `products` SET `price` = '400.00', `discountPrice` = NULL WHERE `slug` = 'secret-teachings';
+UPDATE `products` SET `price` = '500.00', `discountPrice` = NULL WHERE `slug` = 'at-your-command';
+UPDATE `products` SET `price` = '590.00', `discountPrice` = NULL WHERE `slug` = 'faith-is-fortune';
+UPDATE `products` SET `price` = '390.00', `discountPrice` = NULL WHERE `slug` = 'freedom-for-all';
+UPDATE `products` SET `price` = '500.00', `discountPrice` = NULL WHERE `slug` = 'prayer-art-of-believing';
+UPDATE `products` SET `price` = '950.00', `discountPrice` = NULL WHERE `slug` = 'world-shaking-manifestor';
+UPDATE `products` SET `price` = '650.00', `discountPrice` = NULL WHERE `slug` = 'imagination-release-power';
+UPDATE `products` SET `price` = '490.00', `discountPrice` = NULL WHERE `slug` = 'law-and-promise';
+UPDATE `products` SET `price` = '390.00', `discountPrice` = NULL WHERE `slug` = 'seedtime-and-harvest';
+UPDATE `products` SET `price` = '390.00', `discountPrice` = NULL WHERE `slug` = 'be-your-wish';
+UPDATE `products` SET `price` = '590.00', `discountPrice` = NULL WHERE `slug` = 'power-of-awareness';
+UPDATE `products` SET `price` = '650.00', `discountPrice` = NULL WHERE `slug` = 'i-know-my-father';
+UPDATE `products` SET `price` = '590.00', `discountPrice` = NULL WHERE `slug` = 'how-to-attract-love';
+
+-- ══════════════════════════════════════════════════════════════════════════════
+-- PART C — Verify (should show all 20 books with clean list prices)
+-- ══════════════════════════════════════════════════════════════════════════════
+
+SELECT id, slug, titleEn, price, discountPrice, category, isActive
 FROM products
-WHERE slug IN ('heart-of-manifestation', 'out-of-this-world', '5-lessons-from-neville');
+ORDER BY id;
