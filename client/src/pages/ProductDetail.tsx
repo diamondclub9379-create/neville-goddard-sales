@@ -38,7 +38,6 @@ const GENERIC_INCLUDES = [
   "คู่มือการทำสมาธิและแบบฝึกหัด",
   "เข้าถึงเนื้อหาได้ตลอดชีวิต",
   "จัดส่งฟรีทั่วประเทศ",
-  "รับประกันคืนเงิน 30 วัน",
 ];
 
 const FALLBACK_TESTIMONIALS = [
@@ -269,7 +268,7 @@ export default function ProductDetail() {
             </div>
 
             <p className="text-sm text-blue-600/70">
-              ✓ ส่งฟรี &nbsp;•&nbsp; ✓ รับประกัน 30 วัน &nbsp;•&nbsp; ✓ เข้าถึงตลอดชีวิต
+              ✓ ส่งฟรี &nbsp;•&nbsp; ✓ เข้าถึงตลอดชีวิต
             </p>
 
             {discountPct > 0 && (
