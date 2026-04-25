@@ -31,6 +31,11 @@ export function Navbar({ cartCount = 0, onCartClick }: NavbarProps) {
     { href: "/#books", label: "หนังสือทั้งหมด" },
     { href: "/promotion", label: "🔥 โปรโมชั่น", highlight: true as const },
     { href: "/blog", label: "บทความ" },
+    {
+      href: "https://www.skool.com/neville-goddard-thailand-7694/about",
+      label: "👥 ชุมชน",
+      external: true as const,
+    },
   ];
 
   const isActive = (href: string) => {
@@ -78,20 +83,36 @@ export function Navbar({ cartCount = 0, onCartClick }: NavbarProps) {
 
           {/* Desktop Nav Links */}
           <nav className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) =>
-              link.href.startsWith("/#") ? (
-                <button
-                  key={link.href}
-                  onClick={() => handleNavClick(link.href)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    isActive(link.href)
-                      ? "text-amber-400 bg-amber-400/10"
-                      : "text-gray-300 hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  {link.label}
-                </button>
-              ) : (
+            {navLinks.map((link) => {
+              if (link.href.startsWith("/#")) {
+                return (
+                  <button
+                    key={link.href}
+                    onClick={() => handleNavClick(link.href)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      isActive(link.href)
+                        ? "text-amber-400 bg-amber-400/10"
+                        : "text-gray-300 hover:text-white hover:bg-white/5"
+                    }`}
+                  >
+                    {link.label}
+                  </button>
+                );
+              }
+              if ("external" in link && link.external) {
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 rounded-lg text-sm font-medium transition-all text-emerald-300 hover:text-white hover:bg-gradient-to-r hover:from-emerald-600 hover:to-teal-500 ring-1 ring-emerald-400/30 hover:ring-emerald-400/60"
+                  >
+                    {link.label}
+                  </a>
+                );
+              }
+              return (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -107,8 +128,8 @@ export function Navbar({ cartCount = 0, onCartClick }: NavbarProps) {
                 >
                   {link.label}
                 </Link>
-              )
-            )}
+              );
+            })}
           </nav>
 
           {/* Right: Orders + Cart + Mobile Menu Toggle */}
@@ -183,20 +204,36 @@ export function Navbar({ cartCount = 0, onCartClick }: NavbarProps) {
                 เข้าสู่ระบบเพื่อดูคำสั่งซื้อ
               </button>
             )}
-            {navLinks.map((link) =>
-              link.href.startsWith("/#") ? (
-                <button
-                  key={link.href}
-                  onClick={() => handleNavClick(link.href)}
-                  className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-all ${
-                    isActive(link.href)
-                      ? "text-amber-400 bg-amber-400/10"
-                      : "text-gray-300 hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  {link.label}
-                </button>
-              ) : (
+            {navLinks.map((link) => {
+              if (link.href.startsWith("/#")) {
+                return (
+                  <button
+                    key={link.href}
+                    onClick={() => handleNavClick(link.href)}
+                    className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                      isActive(link.href)
+                        ? "text-amber-400 bg-amber-400/10"
+                        : "text-gray-300 hover:text-white hover:bg-white/5"
+                    }`}
+                  >
+                    {link.label}
+                  </button>
+                );
+              }
+              if ("external" in link && link.external) {
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-3 rounded-lg text-sm font-medium transition-all text-emerald-300 ring-1 ring-emerald-400/30"
+                  >
+                    {link.label}
+                  </a>
+                );
+              }
+              return (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -212,8 +249,8 @@ export function Navbar({ cartCount = 0, onCartClick }: NavbarProps) {
                 >
                   {link.label}
                 </Link>
-              )
-            )}
+              );
+            })}
           </nav>
         </div>
       )}
