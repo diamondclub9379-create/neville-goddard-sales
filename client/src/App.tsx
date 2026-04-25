@@ -1,12 +1,14 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
+import { useEffect } from "react";
 import { Route, Router as WouterRouter, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { UrgencyBanner } from "./components/UrgencyBanner";
 import LineChatWidget from "./components/LineChatWidget";
 import BackToTop from "./components/BackToTop";
+import { initAnalytics, trackPageView } from "./lib/analytics";
 import Home from "./pages/Home";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
@@ -89,6 +91,22 @@ function ConditionalBackToTop() {
   return <BackToTop />;
 }
 
+/**
+ * Boots Google Analytics 4 once and fires a pageview on every wouter
+ * route change. Renders nothing. No-op when VITE_GA_MEASUREMENT_ID
+ * is not configured.
+ */
+function AnalyticsTracker() {
+  const [location] = useLocation();
+  useEffect(() => {
+    initAnalytics();
+  }, []);
+  useEffect(() => {
+    trackPageView(location);
+  }, [location]);
+  return null;
+}
+
 function App() {
   return (
     <ErrorBoundary>
@@ -98,6 +116,7 @@ function App() {
       >
         <TooltipProvider>
           <Toaster />
+          <AnalyticsTracker />
           <ConditionalUrgencyBanner />
           <Router />
           <ConditionalLineChatWidget />

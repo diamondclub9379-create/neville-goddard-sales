@@ -57,3 +57,9 @@ services:
         sync: false
       - key: S3_PUBLIC_URL_BASE
         sync: false
+      # ─── Google Analytics 4 (optional) ─────────────────────────────────────
+      # Measurement ID like G-XXXXXXXXXX. Must start with VITE_ so Vite
+      # bakes it into the client bundle at build time. Update this then
+      # redeploy to roll out a new ID.
+      - key: VITE_GA_MEASUREMENT_ID
+        sync: false
