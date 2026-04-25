@@ -26,6 +26,7 @@ import BlogArticleDetail from "./pages/BlogArticleDetail";
 import Orders from "./pages/Orders";
 import IKnowMyFather from "./pages/IKnowMyFather";
 import HowToAttractLove from "./pages/HowToAttractLove";
+import Promotion from "./pages/Promotion";
 
 function AdminRouter() {
   return (
@@ -52,6 +53,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/promotion" component={Promotion} />
       <Route path="/blog" component={BlogListing} />
       <Route path="/blog/:slug" component={BlogArticleDetail} />
       <Route path="/orders" component={Orders} />

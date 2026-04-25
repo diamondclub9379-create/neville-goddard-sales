@@ -34,14 +34,15 @@ function formatTime(ms: number): string {
 
 interface UrgencyBannerProps {
   cartSubtotal?: number;
+  cartQuantity?: number;
 }
 
-export function UrgencyBanner({ cartSubtotal = 0 }: UrgencyBannerProps) {
+export function UrgencyBanner({ cartSubtotal = 0, cartQuantity = 0 }: UrgencyBannerProps) {
   const [deadline, setDeadline] = useState<number>(() => getOrCreateDeadline());
   const [remaining, setRemaining] = useState<number>(deadline - Date.now());
 
-  // Current tier badge
-  const { tier, discountPercent } = calcVolumeDiscount(cartSubtotal);
+  // Current tier badge — based on quantity now
+  const { tier, discountPercent, freeShipping } = calcVolumeDiscount(cartSubtotal, cartQuantity);
 
   useEffect(() => {
     const tick = () => {
@@ -74,7 +75,7 @@ export function UrgencyBanner({ cartSubtotal = 0 }: UrgencyBannerProps) {
       style={{ zIndex: 9999 }}
     >
       <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5">
-        <span>🔥 ข้อเสนอพิเศษ! ส่วนลดสูงสุด 20% + จัดส่งฟรี หมดอายุใน</span>
+        <span>🔥 ซื้อ 2 เล่ม ลด 30% • ซื้อ 3 เล่มขึ้นไป ลด 35% + ส่งฟรี! หมดเวลาใน</span>
         <span
           className={`font-mono font-bold text-base tracking-widest ${
             isUrgent ? "text-yellow-300" : "text-yellow-200"
@@ -82,9 +83,9 @@ export function UrgencyBanner({ cartSubtotal = 0 }: UrgencyBannerProps) {
         >
           {formatTime(remaining)}
         </span>
-        {tier && cartSubtotal > 0 && (
+        {tier && cartQuantity > 0 && (
           <span className="ml-2 inline-flex items-center gap-1 bg-white/20 border border-white/30 rounded-full px-2.5 py-0.5 text-xs font-bold text-white">
-            🎉 Tier ของคุณ: ลด {discountPercent}% + จัดส่งฟรี
+            🎉 ตะกร้าคุณ: ลด {discountPercent}%{freeShipping ? " + ส่งฟรี" : ""}
           </span>
         )}
       </span>

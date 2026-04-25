@@ -79,8 +79,10 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         // Compute subtotal from raw book prices (unitPrice already = book price, no pre-discount)
         const subtotal = input.items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+        // Total number of books across all items — used for quantity-based volume discount
+        const totalQuantity = input.items.reduce((sum, item) => sum + item.quantity, 0);
         // Server-side authoritative volume discount calculation
-        const volumeCalc = calcVolumeDiscount(subtotal);
+        const volumeCalc = calcVolumeDiscount(subtotal, totalQuantity);
         const discountAmount = volumeCalc.discountAmount;
         const shippingFee = volumeCalc.shippingFee;
         const discountTier = volumeCalc.tier;

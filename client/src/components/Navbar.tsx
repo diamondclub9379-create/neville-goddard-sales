@@ -29,6 +29,7 @@ export function Navbar({ cartCount = 0, onCartClick }: NavbarProps) {
   const navLinks = [
     { href: "/", label: "หน้าแรก" },
     { href: "/#books", label: "หนังสือทั้งหมด" },
+    { href: "/promotion", label: "🔥 โปรโมชั่น", highlight: true as const },
     { href: "/blog", label: "บทความ" },
   ];
 
@@ -95,9 +96,13 @@ export function Navbar({ cartCount = 0, onCartClick }: NavbarProps) {
                   key={link.href}
                   href={link.href}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    isActive(link.href)
-                      ? "text-amber-400 bg-amber-400/10"
-                      : "text-gray-300 hover:text-white hover:bg-white/5"
+                    "highlight" in link && link.highlight
+                      ? isActive(link.href)
+                        ? "text-white bg-gradient-to-r from-red-600 to-orange-500 shadow-md shadow-red-500/30"
+                        : "text-red-300 hover:text-white hover:bg-gradient-to-r hover:from-red-600 hover:to-orange-500 ring-1 ring-red-400/30 hover:ring-red-400/60"
+                      : isActive(link.href)
+                        ? "text-amber-400 bg-amber-400/10"
+                        : "text-gray-300 hover:text-white hover:bg-white/5"
                   }`}
                 >
                   {link.label}
@@ -196,9 +201,13 @@ export function Navbar({ cartCount = 0, onCartClick }: NavbarProps) {
                   key={link.href}
                   href={link.href}
                   className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
-                    isActive(link.href)
-                      ? "text-amber-400 bg-amber-400/10"
-                      : "text-gray-300 hover:text-white hover:bg-white/5"
+                    "highlight" in link && link.highlight
+                      ? isActive(link.href)
+                        ? "text-white bg-gradient-to-r from-red-600 to-orange-500"
+                        : "text-red-300 ring-1 ring-red-400/30"
+                      : isActive(link.href)
+                        ? "text-amber-400 bg-amber-400/10"
+                        : "text-gray-300 hover:text-white hover:bg-white/5"
                   }`}
                 >
                   {link.label}

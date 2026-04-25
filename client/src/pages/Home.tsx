@@ -237,7 +237,8 @@ function CheckoutModal({ isOpen, onClose, cartItems, onConfirmOrder }: {
   const createCheckoutSession = trpc.stripe.createCheckoutSession.useMutation();
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.book.price * item.quantity, 0);
-  const volumeCalc = calcVolumeDiscount(subtotal);
+  const cartQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const volumeCalc = calcVolumeDiscount(subtotal, cartQuantity);
   const { tier, discountPercent, discountAmount, shippingFee, total } = volumeCalc;
 
   const handleFileSelect = useCallback((file: File) => {
@@ -839,7 +840,8 @@ export default function Home() {
   const handleConfirmOrder = (formData: any) => {
     const total = formData.total ?? (() => {
       const subtotal = cartItems.reduce((sum, item) => sum + item.book.price * item.quantity, 0);
-      return calcVolumeDiscount(subtotal).total;
+      const qty = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+      return calcVolumeDiscount(subtotal, qty).total;
     })();
     setOrderData({ ...formData, total });
     setIsCheckoutOpen(false);
