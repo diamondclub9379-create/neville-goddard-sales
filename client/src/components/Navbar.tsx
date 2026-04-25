@@ -2,7 +2,7 @@ import { ShoppingCart, BookOpen, Menu, X, Package } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
+import { getLoginUrl, COMMUNITY_PATH } from "@/const";
 
 interface NavbarProps {
   cartCount?: number;
@@ -32,7 +32,7 @@ export function Navbar({ cartCount = 0, onCartClick }: NavbarProps) {
     { href: "/promotion", label: "🔥 โปรโมชั่น", highlight: true as const },
     { href: "/blog", label: "บทความ" },
     {
-      href: "https://www.skool.com/neville-goddard-thailand-7694/about",
+      href: COMMUNITY_PATH,
       label: "👥 ชุมชน",
       external: true as const,
     },

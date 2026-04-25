@@ -9,7 +9,7 @@ import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { calcVolumeDiscount, VOLUME_DISCOUNT_TIERS, STANDARD_SHIPPING_FEE } from "@shared/const";
+import { calcVolumeDiscount, VOLUME_DISCOUNT_TIERS, STANDARD_SHIPPING_FEE, COMMUNITY_PATH } from "@shared/const";
 import { useCart } from "@/contexts/CartContext";
 
 interface Book {
@@ -687,8 +687,31 @@ function OrderConfirmationModal({ isOpen, onClose, orderData, orderNumber }: {
             <p className="text-amber-400 font-bold">📞 LINE: @coachwanchai | Tel: 0994159587</p>
           </div>
 
+          {/* Skool Community CTA */}
+          <a
+            href={COMMUNITY_PATH}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block bg-gradient-to-r from-emerald-600/20 to-teal-600/20 border border-emerald-400/40 rounded-lg p-5 hover:from-emerald-600/30 hover:to-teal-600/30 transition-all"
+          >
+            <div className="flex items-start gap-3">
+              <div className="text-3xl">👥</div>
+              <div className="flex-1">
+                <h3 className="text-emerald-300 font-bold text-lg mb-1">
+                  เข้าร่วมชุมชน Neville Goddard Thailand
+                </h3>
+                <p className="text-gray-300 text-sm mb-2">
+                  ระหว่างรอหนังสือ มาเจอกับเพื่อนที่ฝึกการ Manifest เหมือนกัน เรียนรู้ แชร์ประสบการณ์ และรับเทคนิคพิเศษฟรี
+                </p>
+                <span className="inline-flex items-center gap-1 text-emerald-300 font-semibold text-sm">
+                  เข้าร่วมฟรี →
+                </span>
+              </div>
+            </div>
+          </a>
+
           {/* Close Button */}
-          <Button 
+          <Button
             onClick={onClose}
             className="w-full bg-amber-400 text-slate-900 hover:bg-amber-300 font-bold py-6 text-lg"
           >
@@ -1228,6 +1251,62 @@ export default function Home() {
               <p className="text-gray-400 text-sm italic border-l-2 border-amber-400/40 pl-4">
                 เนวิลล์เสียชีวิตเมื่อวันที่ 1 ตุลาคม ค.ศ. 1972 แต่คำสอนของเขายังคงมีชีวิตอยู่และส่งผลต่อผู้คนทั่วโลกมาจนถึงทุกวันนี้
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Skool Community Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-12 bg-gradient-to-br from-emerald-950/40 via-slate-900 to-teal-950/40 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+          <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-emerald-500/10 blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-teal-500/10 blur-3xl" />
+        </div>
+        <div className="max-w-4xl mx-auto relative">
+          <div className="bg-gradient-to-br from-slate-900/80 to-slate-800/80 border border-emerald-400/30 rounded-2xl p-8 md:p-12 backdrop-blur-sm shadow-2xl shadow-emerald-500/10">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 bg-emerald-500/15 border border-emerald-400/30 rounded-full px-4 py-1.5 mb-4">
+                <span className="text-2xl">👥</span>
+                <span className="text-emerald-300 text-sm font-semibold">ชุมชนฟรี</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
+                เข้าร่วม <span className="text-emerald-400">Neville Goddard Thailand</span>
+              </h2>
+              <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+                ชุมชนสำหรับคนไทยที่สนใจคำสอนของเนวิลล์ ก็อดดาร์ด<br className="hidden md:block" />
+                เรียนรู้ แชร์ประสบการณ์ และฝึก Manifest ไปด้วยกัน
+              </p>
+            </div>
+
+            <div className="grid sm:grid-cols-3 gap-4 mb-8">
+              <div className="bg-slate-800/40 border border-emerald-400/20 rounded-xl p-5 text-center">
+                <div className="text-3xl mb-2">📚</div>
+                <h3 className="text-emerald-300 font-bold mb-1">บทเรียนฟรี</h3>
+                <p className="text-gray-400 text-sm">เนื้อหาเจาะลึกเทคนิค SATS, Revision และ Living in the End</p>
+              </div>
+              <div className="bg-slate-800/40 border border-emerald-400/20 rounded-xl p-5 text-center">
+                <div className="text-3xl mb-2">💬</div>
+                <h3 className="text-emerald-300 font-bold mb-1">พูดคุยกับเพื่อน</h3>
+                <p className="text-gray-400 text-sm">แชร์ประสบการณ์ Manifest กับคนที่เข้าใจ ไม่มีคำถามที่งี่เง่า</p>
+              </div>
+              <div className="bg-slate-800/40 border border-emerald-400/20 rounded-xl p-5 text-center">
+                <div className="text-3xl mb-2">🎁</div>
+                <h3 className="text-emerald-300 font-bold mb-1">โบนัสพิเศษ</h3>
+                <p className="text-gray-400 text-sm">เทคนิคและสรุปจากหนังสือที่หาไม่ได้ที่อื่น</p>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <a
+                href={COMMUNITY_PATH}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold px-8 py-4 rounded-xl shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all text-lg"
+              >
+                🚀 เข้าร่วมชุมชนฟรี
+              </a>
+              <p className="text-gray-500 text-xs mt-3">ฟรี 100% • ไม่ต้องใช้บัตรเครดิต • ออกได้ตลอด</p>
             </div>
           </div>
         </div>

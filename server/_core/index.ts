@@ -9,6 +9,7 @@ import { handleStripeWebhook } from "../stripeWebhook";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
+import { SKOOL_COMMUNITY_URL } from "@shared/const";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -50,6 +51,14 @@ async function startServer() {
       createContext,
     })
   );
+  // /community → Skool community redirect.
+  // Short branded URL we control; can later swap providers or add UTM
+  // params in one place. Registered before serveStatic/Vite so the
+  // SPA fallback doesn't swallow it.
+  app.get("/community", (_req, res) => {
+    res.redirect(302, SKOOL_COMMUNITY_URL);
+  });
+
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);

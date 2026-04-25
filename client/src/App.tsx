@@ -8,6 +8,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { UrgencyBanner } from "./components/UrgencyBanner";
 import LineChatWidget from "./components/LineChatWidget";
 import BackToTop from "./components/BackToTop";
+import { CommunityBanner } from "./components/CommunityBanner";
 import { initAnalytics, trackPageView } from "./lib/analytics";
 import Home from "./pages/Home";
 import Blog from "./pages/Blog";
@@ -91,6 +92,14 @@ function ConditionalBackToTop() {
   return <BackToTop />;
 }
 
+/** Show Community banner only on public (non-admin) pages */
+function ConditionalCommunityBanner() {
+  const [location] = useLocation();
+  if (location.startsWith("/admin")) return null;
+  if (location.startsWith("/orders")) return null; // already in modal there
+  return <CommunityBanner />;
+}
+
 /**
  * Boots Google Analytics 4 once and fires a pageview on every wouter
  * route change. Renders nothing. No-op when VITE_GA_MEASUREMENT_ID
@@ -121,6 +130,7 @@ function App() {
           <Router />
           <ConditionalLineChatWidget />
           <ConditionalBackToTop />
+          <ConditionalCommunityBanner />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

@@ -1,8 +1,9 @@
 import { useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, Users, BookOpen } from "lucide-react";
 import { Streamdown } from "streamdown";
+import { COMMUNITY_PATH } from "@/const";
 
 export default function BlogArticleDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -67,6 +68,54 @@ export default function BlogArticleDetail() {
         {/* Article Content */}
         <div className="prose prose-invert max-w-none mb-12">
           <Streamdown>{post.content}</Streamdown>
+        </div>
+
+        {/* End-of-article CTA: Community + Books */}
+        <div className="grid md:grid-cols-2 gap-4 mb-12">
+          <a
+            href={COMMUNITY_PATH}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group bg-gradient-to-br from-emerald-600/20 to-teal-600/20 border border-emerald-400/40 rounded-xl p-6 hover:border-emerald-400/70 hover:from-emerald-600/30 hover:to-teal-600/30 transition-all"
+          >
+            <div className="flex items-start gap-3">
+              <div className="bg-emerald-500/20 p-2 rounded-lg">
+                <Users className="text-emerald-300" size={24} />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-emerald-300 font-bold text-lg mb-1 group-hover:text-emerald-200">
+                  เข้าร่วมชุมชนฟรี
+                </h3>
+                <p className="text-gray-300 text-sm mb-2">
+                  มาเจอเพื่อนที่ฝึก Manifest เหมือนกัน แชร์ประสบการณ์ และรับเทคนิคพิเศษทุกสัปดาห์
+                </p>
+                <span className="text-emerald-300 font-semibold text-sm group-hover:underline">
+                  เข้าร่วมเลย →
+                </span>
+              </div>
+            </div>
+          </a>
+          <a
+            href="/#books"
+            className="group bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-400/40 rounded-xl p-6 hover:border-amber-400/70 hover:from-amber-500/30 hover:to-orange-500/30 transition-all"
+          >
+            <div className="flex items-start gap-3">
+              <div className="bg-amber-500/20 p-2 rounded-lg">
+                <BookOpen className="text-amber-300" size={24} />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-amber-300 font-bold text-lg mb-1 group-hover:text-amber-200">
+                  อ่านหนังสือ Neville Goddard
+                </h3>
+                <p className="text-gray-300 text-sm mb-2">
+                  เจาะลึกหลักการ Manifest กับฉบับแปลไทย อ่านง่าย เข้าใจลึก
+                </p>
+                <span className="text-amber-300 font-semibold text-sm group-hover:underline">
+                  ดูหนังสือทั้งหมด →
+                </span>
+              </div>
+            </div>
+          </a>
         </div>
 
         {/* Back Button */}

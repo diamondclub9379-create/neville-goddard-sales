@@ -4,6 +4,15 @@ export const AXIOS_TIMEOUT_MS = 30_000;
 export const UNAUTHED_ERR_MSG = 'Please login (10001)';
 export const NOT_ADMIN_ERR_MSG = 'You do not have required permission (10002)';
 
+// Skool community — free lead-capture community.
+// CTAs link to the internal /community path (handled by an Express
+// redirect on the server) rather than skool.com directly. This gives
+// us a short branded URL we can change in one place if we ever migrate
+// community providers, and lets us add UTM params for tracking later.
+export const SKOOL_COMMUNITY_URL =
+  "https://www.skool.com/neville-goddard-thailand-7694/about";
+export const COMMUNITY_PATH = "/community";
+
 /**
  * Volume discount tiers — quantity-based promo.
  * Sorted descending by minQuantity so we match the best tier first.

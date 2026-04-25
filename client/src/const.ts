@@ -1,4 +1,9 @@
-export { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
+export {
+  COOKIE_NAME,
+  ONE_YEAR_MS,
+  SKOOL_COMMUNITY_URL,
+  COMMUNITY_PATH,
+} from "@shared/const";
 
 // Login URL — kicks off the server-side Google OAuth flow.
 // The server redirects the browser to Google's consent screen,

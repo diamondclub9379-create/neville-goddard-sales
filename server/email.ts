@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { ENV } from "./_core/env";
+import { SKOOL_COMMUNITY_URL } from "@shared/const";
 
 const OWNER_EMAIL = "owner@nevillebooks.com";
 const FROM_EMAIL = "ไดมอนด์คลับ <onboarding@resend.dev>"; // Resend default sender for testing
@@ -138,13 +139,21 @@ function buildCustomerEmailHtml(data: OrderEmailData): string {
     </div>
 
     <!-- Next Steps -->
-    <div style="background: linear-gradient(135deg, rgba(251,191,36,0.06), rgba(10,15,30,0.8)); border: 1px solid rgba(251,191,36,0.2); border-radius: 12px; padding: 20px; margin-bottom: 32px;">
+    <div style="background: linear-gradient(135deg, rgba(251,191,36,0.06), rgba(10,15,30,0.8)); border: 1px solid rgba(251,191,36,0.2); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
       <h3 style="margin: 0 0 12px; color: #fbbf24; font-size: 13px; letter-spacing: 1px; text-transform: uppercase;">📋 ขั้นตอนถัดไป</h3>
       <ol style="margin: 0; padding-left: 20px; color: #94a3b8; font-size: 14px; line-height: 2;">
         <li>ทีมงานจะตรวจสอบออเดอร์ภายใน 24 ชั่วโมง</li>
         <li>เมื่อยืนยันการชำระเงินแล้ว จะจัดส่งหนังสือทันที</li>
         <li>คุณจะได้รับอีเมลแจ้งเลขพัสดุเมื่อจัดส่งแล้ว</li>
       </ol>
+    </div>
+
+    <!-- Skool Community CTA -->
+    <div style="background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(10,15,30,0.8)); border: 1px solid rgba(16,185,129,0.35); border-radius: 12px; padding: 24px; margin-bottom: 32px; text-align: center;">
+      <div style="font-size: 36px; margin-bottom: 8px;">👥</div>
+      <h3 style="margin: 0 0 8px; color: #6ee7b7; font-size: 18px; font-weight: 700;">เข้าร่วมชุมชน Neville Goddard Thailand</h3>
+      <p style="margin: 0 0 16px; color: #94a3b8; font-size: 14px; line-height: 1.6;">ระหว่างรอหนังสือ มาเจอกับเพื่อนที่ฝึกการ Manifest เหมือนกัน<br/>เรียนรู้ แชร์ประสบการณ์ และรับเทคนิคพิเศษฟรี</p>
+      <a href="${SKOOL_COMMUNITY_URL}?utm_source=email&utm_medium=order_confirmation&utm_campaign=community" style="display: inline-block; background: linear-gradient(135deg, #10b981, #14b8a6); color: #ffffff; font-weight: 700; text-decoration: none; padding: 12px 28px; border-radius: 8px; font-size: 14px;">เข้าร่วมฟรี →</a>
     </div>
 
     <!-- Footer -->
