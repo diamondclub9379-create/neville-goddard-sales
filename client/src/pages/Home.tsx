@@ -304,7 +304,7 @@ function CheckoutModal({ isOpen, onClose, cartItems, onConfirmOrder }: {
 
     setIsSubmitting(true);
     try {
-      await createOrderMutation.mutateAsync({
+      const result = await createOrderMutation.mutateAsync({
         customerName: formData.name,
         customerEmail: formData.email,
         customerPhone: formData.phone,
@@ -320,6 +320,23 @@ function CheckoutModal({ isOpen, onClose, cartItems, onConfirmOrder }: {
         })),
         discountAmount,
       });
+
+      // Upload payment slip — order is already created, so a slip upload
+      // failure shouldn't block confirmation. Surface the error and let
+      // the customer (or admin) follow up if needed.
+      try {
+        const slipForm = new FormData();
+        slipForm.append("file", slipFile);
+        slipForm.append("orderId", String(result.orderId));
+        const slipResp = await fetch("/api/upload/slip", { method: "POST", body: slipForm });
+        if (!slipResp.ok) {
+          const body = await slipResp.json().catch(() => ({}));
+          throw new Error(body?.error ?? `อัปโหลดสลิปไม่สำเร็จ (${slipResp.status})`);
+        }
+      } catch (slipErr: any) {
+        toast.error(`คำสั่งซื้อสร้างแล้ว แต่อัปโหลดสลิปไม่สำเร็จ: ${slipErr?.message ?? "กรุณาติดต่อแอดมิน"}`);
+        console.error("[slip upload]", slipErr);
+      }
 
       onConfirmOrder({
         name: formData.name,
