@@ -407,14 +407,12 @@ function CheckoutModal({ isOpen, onClose, cartItems, onConfirmOrder }: {
                 </div>
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-green-400 text-sm">
-                    <span>{`ส่วนลด Volume ${discountPercent}%:`}</span>
+                    <span>
+                      {promo === "bogo"
+                        ? `ส่วนลด BOGO 5/5 (ฟรี ${freeUnits} เล่ม):`
+                        : `ส่วนลด Volume ${discountPercent}%:`}
+                    </span>
                     <span className="font-bold">-฿{discountAmount}</span>
-                  </div>
-                )}
-                {promo === "bogo" && freeUnits > 0 && (
-                  <div className="flex justify-between text-rose-300 text-sm bg-rose-400/10 border border-rose-400/30 rounded px-2 py-1.5">
-                    <span className="font-semibold">🎁 BOGO: ฟรีเพิ่ม {freeUnits} เล่ม!</span>
-                    <span className="text-xs text-rose-300/70">(จัดส่ง 2× ที่สั่ง)</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">

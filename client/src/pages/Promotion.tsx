@@ -61,19 +61,23 @@ const FAQ_VOLUME = [
 const FAQ_BOGO = [
   {
     q: "ซื้อ 1 แถม 1 คำนวณยังไง?",
-    a: "หยิบกี่เล่ม ได้ฟรีอีกเท่านั้นเลย! ซื้อ 1 เล่ม ฟรี 1 (ได้ทั้งหมด 2 เล่ม) — ซื้อ 2 ฟรี 2 (ได้ 4) — ซื้อ 3 ฟรี 3 (ได้ 6) จ่ายเท่าราคาที่หยิบ ส่งฟรีทุกออเดอร์!",
+    a: "ทุก 2 เล่มที่หยิบลงตะกร้า ระบบจะให้เล่มที่ถูกที่สุดในคู่ฟรีอัตโนมัติ — ตัวอย่าง: หยิบเล่ม ฿990 + เล่ม ฿590 → จ่าย ฿990 ได้ทั้ง 2 เล่ม! หยิบ 4 เล่ม [990, 990, 590, 590] → จ่าย 990+590 = 1,580 ได้ทั้ง 4 เล่ม + ส่งฟรี",
   },
   {
     q: "เลือกหนังสือเล่มไหนก็ได้ไหม?",
-    a: "ได้ครับ ทุกเล่มในร้านเข้าโปรนี้หมด ผสมเล่มไหนก็ได้ ระบบจะจัดส่ง 2 เท่าของที่หยิบให้อัตโนมัติ",
+    a: "ได้ครับ ทุกเล่มในร้านเข้าโปรนี้หมด ผสมเล่มไหนก็ได้ ขอแค่ในตะกร้ามี 2 เล่มขึ้นไป",
   },
   {
-    q: "เล่มฟรีคือเล่มเดียวกับที่สั่งใช่ไหม?",
-    a: "ใช่ครับ ทุกเล่มที่หยิบลงตะกร้าจะได้รับเป็น 2 ก๊อปปี้ เช่น สั่ง A 1 เล่ม + B 1 เล่ม → จัดส่ง A 2 เล่ม + B 2 เล่ม รวม 4 เล่ม",
+    q: "ระบบเลือกเล่มไหนเป็นเล่มฟรี?",
+    a: "ระบบจะเลือกอัตโนมัติให้เล่มที่ถูกที่สุดในแต่ละคู่ฟรี ลูกค้าได้ของครบทุกเล่มที่หยิบลงตะกร้า ไม่ต้องเลือกเอง",
+  },
+  {
+    q: "ถ้าหยิบเลขคี่ (เช่น 3 เล่ม) ได้ส่วนลดไหม?",
+    a: "ได้ครับ — 3 เล่ม จะจับคู่ได้ 1 คู่ (เล่มถูกของคู่นั้นฟรี) อีก 1 เล่มจ่ายเต็มราคา หยิบเป็นเลขคู่จะคุ้มกว่า",
   },
   {
     q: "ส่งฟรีจริงไหม?",
-    a: "ส่งฟรี EMS ทั่วประเทศ ไม่มีค่าส่งเพิ่มเติม ไม่ว่าจะสั่งกี่เล่มก็ตาม",
+    a: "ส่งฟรี EMS ทั่วประเทศ ไม่มีค่าส่งเพิ่มเติม ขอแค่ในตะกร้ามี 2 เล่มขึ้นไป",
   },
   {
     q: "โปรนี้หมดอายุเมื่อไร?",
@@ -166,7 +170,7 @@ export default function Promotion() {
     toast.success(`เพิ่ม ${totalSelectedQty} เล่มลงตะกร้าแล้ว!`, {
       description: calc.tier
         ? bogo
-          ? `+ ฟรีอีก ${calc.freeUnits} เล่ม! ส่งฟรี — ฿${calc.total.toLocaleString()}`
+          ? `ฟรี ${calc.freeUnits} เล่ม + ส่งฟรี — ฿${calc.total.toLocaleString()}`
           : `ส่วนลด ${calc.discountPercent}% — ฿${calc.total.toLocaleString()}`
         : undefined,
     });
@@ -225,29 +229,26 @@ export default function Promotion() {
           )}
           <p className="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto mb-8">
             {bogo
-              ? "ฉลอง 5/5 — ซื้อกี่เล่ม ได้ฟรีเท่านั้น! เราจัดส่งให้ 2 เท่าของที่สั่ง พร้อมส่งฟรี เฉพาะวันนี้!"
+              ? "ฉลอง 5/5 — ทุก 2 เล่ม เล่มที่ถูกที่สุดฟรีอัตโนมัติ! ผสมเล่มไหนก็ได้ ส่งฟรี เฉพาะวันนี้!"
               : "เปลี่ยนชีวิตด้วยหนังสือ Neville Goddard ฉบับแปลไทย — ผสมเล่มไหนก็ได้ ลดยิ่งซื้อมากยิ่งคุ้ม"}
           </p>
 
           {/* Tier showcase cards */}
           {bogo ? (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-3xl mx-auto">
-              <div className="bg-rose-400/10 border-2 border-rose-400/50 rounded-xl p-5 backdrop-blur-sm relative shadow-lg shadow-rose-500/15">
-                <div className="text-3xl mb-2">📖➕📖</div>
-                <div className="text-rose-300 text-xs uppercase tracking-wider mb-1 font-bold">ซื้อ 1 เล่ม</div>
-                <div className="text-white text-lg font-bold mb-1">ฟรี 1 เล่ม</div>
-                <div className="text-green-400 text-xs font-bold flex items-center justify-center gap-1">
-                  <Truck size={12} />
-                  ส่งฟรี!
-                </div>
+              <div className="bg-slate-800/40 border border-slate-700 rounded-xl p-5 backdrop-blur-sm">
+                <div className="text-3xl mb-2">📖</div>
+                <div className="text-gray-400 text-xs uppercase tracking-wider mb-1">1 เล่ม</div>
+                <div className="text-white text-lg font-bold mb-1">ราคาเต็ม</div>
+                <div className="text-gray-500 text-xs">+ ค่าส่ง ฿{STANDARD_SHIPPING_FEE}</div>
               </div>
               <div className="bg-rose-400/10 border-2 border-rose-400/50 rounded-xl p-5 backdrop-blur-sm relative shadow-lg shadow-rose-500/15">
                 <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-rose-400 to-pink-400 text-slate-900 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">
                   แนะนำ
                 </div>
-                <div className="text-3xl mb-2">📚📚📚📚</div>
-                <div className="text-rose-300 text-xs uppercase tracking-wider mb-1 font-bold">ซื้อ 2 เล่ม</div>
-                <div className="text-white text-lg font-bold mb-1">ฟรี 2 เล่ม</div>
+                <div className="text-3xl mb-2">📚📚</div>
+                <div className="text-rose-300 text-xs uppercase tracking-wider mb-1 font-bold">2 เล่ม</div>
+                <div className="text-white text-lg font-bold mb-1">จ่าย 1 ฟรี 1</div>
                 <div className="text-green-400 text-xs font-bold flex items-center justify-center gap-1">
                   <Truck size={12} />
                   ส่งฟรี!
@@ -258,8 +259,8 @@ export default function Promotion() {
                   คุ้มสุด
                 </div>
                 <div className="text-3xl mb-2">🎁</div>
-                <div className="text-yellow-300 text-xs uppercase tracking-wider mb-1 font-bold">ซื้อ 3 เล่ม</div>
-                <div className="text-white text-lg font-bold mb-1">ฟรี 3 เล่ม</div>
+                <div className="text-yellow-300 text-xs uppercase tracking-wider mb-1 font-bold">4 เล่ม</div>
+                <div className="text-white text-lg font-bold mb-1">จ่าย 2 ฟรี 2</div>
                 <div className="text-green-400 text-xs font-bold flex items-center justify-center gap-1">
                   <Truck size={12} />
                   ส่งฟรี!
@@ -506,9 +507,14 @@ export default function Promotion() {
           {/* Tier nudge */}
           {bogo ? (
             <>
-              {calc.tier && (
+              {!calc.tier && totalSelectedQty === 1 && (
                 <div className="bg-rose-400/10 border-t border-rose-400/20 text-rose-300 text-xs text-center py-1.5 px-4">
-                  🎁 จะได้รับทั้งหมด {totalSelectedQty * 2} เล่ม ({totalSelectedQty} ซื้อ + {totalSelectedQty} ฟรี)
+                  เพิ่มอีก 1 เล่ม → เล่มที่ถูกที่สุดในคู่ฟรีทันที + ส่งฟรี!
+                </div>
+              )}
+              {calc.tier && totalSelectedQty % 2 === 1 && (
+                <div className="bg-rose-400/10 border-t border-rose-400/20 text-rose-300 text-xs text-center py-1.5 px-4">
+                  เพิ่มอีก 1 เล่ม → ฟรีอีก 1 เล่ม!
                 </div>
               )}
             </>

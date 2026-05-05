@@ -49,17 +49,26 @@ export interface CartLine {
 }
 
 /**
- * BOGO 5/5: for each book in the cart, ship one extra free copy.
- * Customer pays full subtotal; we ship 2× the cart with free shipping.
- * "ซื้อ N เล่ม ฟรี N เล่ม" — cart of 2 ships 4 books, cart of 3 ships 6 books.
+ * BOGO 5/5: for every pair of books in the cart, the cheaper one is free.
+ * Expand items to individual units, sort by unitPrice descending, then every
+ * other unit (index 1, 3, 5...) is free. Customer pays for the more expensive
+ * half; cart contents ship as-is (no duplicates).
  *
- * No price discount is applied (the value is the doubled shipment), so this
- * helper just exposes the freeUnits count for display.
+ * Examples:
+ *   [990, 590]              → frees 590                   (pay 990)
+ *   [990, 990, 590, 590]    → frees 990 + 590 = 1,580     (pay 1,580)
+ *   [990, 590, 290]         → frees 590                   (pay 990 + 290)
+ *   [990]                   → no pair, no discount
  */
 export function calcBogoDiscount(items: CartLine[]): { discountAmount: number; freeUnits: number } {
-  let qty = 0;
-  for (const it of items) qty += it.quantity;
-  return { discountAmount: 0, freeUnits: qty };
+  const units: number[] = [];
+  for (const it of items) {
+    for (let i = 0; i < it.quantity; i++) units.push(it.unitPrice);
+  }
+  units.sort((a, b) => b - a);
+  let discount = 0;
+  for (let i = 1; i < units.length; i += 2) discount += units[i];
+  return { discountAmount: Math.round(discount), freeUnits: Math.floor(units.length / 2) };
 }
 
 /**
@@ -129,7 +138,7 @@ export function calcCartDiscount(
   now: number = Date.now(),
 ): CartDiscountResult {
   if (isBogoActive(now)) {
-    if (quantity < 1) {
+    if (quantity < 2) {
       return {
         promo: null,
         tier: null,
@@ -141,16 +150,26 @@ export function calcCartDiscount(
         freeUnits: 0,
       };
     }
-    // Customer pays full subtotal; we ship one free copy of every book in cart.
+    let discountAmount: number;
+    let freeUnits: number;
+    if (items && items.length > 0) {
+      const r = calcBogoDiscount(items);
+      discountAmount = r.discountAmount;
+      freeUnits = r.freeUnits;
+    } else {
+      // Banner / display-only callers: approximate from average price.
+      freeUnits = Math.floor(quantity / 2);
+      discountAmount = quantity > 0 ? Math.round((subtotal * freeUnits) / quantity) : 0;
+    }
     return {
       promo: "bogo",
       tier: BOGO_TIER_LABEL,
       discountPercent: 0,
-      discountAmount: 0,
+      discountAmount,
       shippingFee: 0,
-      total: subtotal,
+      total: subtotal - discountAmount,
       freeShipping: true,
-      freeUnits: quantity,
+      freeUnits,
     };
   }
   const v = calcVolumeDiscount(subtotal, quantity);

@@ -69,7 +69,7 @@ export function UrgencyBanner({ cartSubtotal = 0, cartQuantity = 0 }: UrgencyBan
   const isUrgent = remaining < ONE_HOUR && remaining > 0;
 
   const message = bogo
-    ? "🎁 5/5 พิเศษ! ซื้อ 1 แถม 1 — ซื้อกี่เล่ม ฟรีเท่านั้น! ส่งฟรีทุกออเดอร์ หมดเวลาใน"
+    ? "🎁 5/5 พิเศษ! ซื้อ 1 แถม 1 — ทุก 2 เล่ม เล่มที่ถูกที่สุดฟรี! + ส่งฟรี หมดเวลาใน"
     : "🔥 ซื้อ 2 เล่ม ลด 30% • ซื้อ 3 เล่มขึ้นไป ลด 35% + ส่งฟรี! หมดเวลาใน";
 
   const bgClasses = bogo
