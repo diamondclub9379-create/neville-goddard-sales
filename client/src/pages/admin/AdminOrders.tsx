@@ -605,6 +605,7 @@ export default function AdminOrders() {
                       <th className="text-left text-gray-400 text-xs font-medium px-4 py-3">เลขที่</th>
                       <th className="text-left text-gray-400 text-xs font-medium px-4 py-3">ลูกค้า</th>
                       <th className="text-left text-gray-400 text-xs font-medium px-4 py-3">การชำระเงิน</th>
+                      <th className="text-center text-gray-400 text-xs font-medium px-4 py-3">สลิป</th>
                       <th className="text-right text-gray-400 text-xs font-medium px-4 py-3">ยอดรวม</th>
                       <th className="text-center text-gray-400 text-xs font-medium px-4 py-3">สถานะ</th>
                       <th className="text-left text-gray-400 text-xs font-medium px-4 py-3">วันที่</th>
@@ -625,6 +626,17 @@ export default function AdminOrders() {
                           </td>
                           <td className="px-4 py-3">
                             <span className="text-gray-300 text-sm">{PAYMENT_LABELS[order.paymentMethod] ?? order.paymentMethod}</span>
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            {order.slipUrl ? (
+                              <Badge className="text-xs border bg-green-500/10 text-green-400 border-green-500/30">
+                                ✅ มีสลิป
+                              </Badge>
+                            ) : (
+                              <Badge className="text-xs border bg-yellow-500/10 text-yellow-400 border-yellow-500/30">
+                                ⏳ รอสลิป
+                              </Badge>
+                            )}
                           </td>
                           <td className="px-4 py-3 text-right">
                             <span className="text-white font-medium">฿{Number(order.totalAmount).toLocaleString()}</span>
@@ -673,9 +685,20 @@ export default function AdminOrders() {
                       </div>
                       <p className="text-white text-sm">{order.customerName}</p>
                       <div className="flex items-center justify-between mt-2">
-                        <span className="text-gray-400 text-xs">
-                          {new Date(order.createdAt).toLocaleDateString("th-TH")}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-400 text-xs">
+                            {new Date(order.createdAt).toLocaleDateString("th-TH")}
+                          </span>
+                          {order.slipUrl ? (
+                            <Badge className="text-[10px] px-1.5 py-0 border bg-green-500/10 text-green-400 border-green-500/30">
+                              ✅ สลิป
+                            </Badge>
+                          ) : (
+                            <Badge className="text-[10px] px-1.5 py-0 border bg-yellow-500/10 text-yellow-400 border-yellow-500/30">
+                              ⏳ รอสลิป
+                            </Badge>
+                          )}
+                        </div>
                         <span className="text-amber-400 font-medium text-sm">฿{Number(order.totalAmount).toLocaleString()}</span>
                       </div>
                     </button>
