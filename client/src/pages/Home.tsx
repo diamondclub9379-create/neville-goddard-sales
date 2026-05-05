@@ -234,7 +234,6 @@ function CheckoutModal({ isOpen, onClose, cartItems, onConfirmOrder }: {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const createOrderMutation = trpc.orders.create.useMutation();
-  const createCheckoutSession = trpc.stripe.createCheckoutSession.useMutation();
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.book.price * item.quantity, 0);
   const cartQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -298,21 +297,19 @@ function CheckoutModal({ isOpen, onClose, cartItems, onConfirmOrder }: {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.phone || !formData.address) return;
 
-    const isCreditCard = formData.paymentMethod === "credit-card";
-
-    if (!isCreditCard && !slipFile) {
+    if (!slipFile) {
       toast.error("กรุณาอัปโหลดหลักฐานการโอนเงินก่อนยืนยัน");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const result = await createOrderMutation.mutateAsync({
+      await createOrderMutation.mutateAsync({
         customerName: formData.name,
         customerEmail: formData.email,
         customerPhone: formData.phone,
         customerAddress: formData.address,
-        paymentMethod: formData.paymentMethod as any,
+        paymentMethod: "bank-transfer",
         items: cartItems.map(item => ({
           bookId: item.book.id,
           bookTitleTh: item.book.titleTh,
@@ -324,40 +321,13 @@ function CheckoutModal({ isOpen, onClose, cartItems, onConfirmOrder }: {
         discountAmount,
       });
 
-      if (isCreditCard) {
-        const sessionResult = await createCheckoutSession.mutateAsync({
-          orderId: result.orderId,
-          orderNumber: result.orderNumber,
-          items: cartItems.map(item => ({
-            bookTitleTh: item.book.titleTh,
-            bookImage: item.book.image,
-            unitPrice: item.book.price,
-            quantity: item.quantity,
-          })),
-          totalAmount: total,
-          customerEmail: formData.email,
-          customerName: formData.name,
-          origin: typeof window !== 'undefined' ? window.location.origin : '',
-        });
-        if (sessionResult?.url) {
-          window.open(sessionResult.url, "_blank");
-        }
-        onConfirmOrder({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.address,
-          total,
-        });
-      } else {
-        onConfirmOrder({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.address,
-          total,
-        });
-      }
+      onConfirmOrder({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address,
+        total,
+      });
     } catch (error) {
       toast.error("เกิดข้อผิดพลาด กรุณาลองใหม่");
       console.error(error);
@@ -461,41 +431,9 @@ function CheckoutModal({ isOpen, onClose, cartItems, onConfirmOrder }: {
               </div>
             </div>
 
-            {/* Payment Method */}
-            <div className="space-y-4">
-              <h3 className="text-amber-400 font-bold">💳 วิธีการชำระเงิน</h3>
-              <div className="space-y-2">
-                <div
-                  onClick={() => setFormData(f => ({ ...f, paymentMethod: "bank-transfer" }))}
-                  className={`flex items-center gap-3 p-3 rounded border cursor-pointer transition-all ${
-                    formData.paymentMethod === "bank-transfer"
-                      ? "border-amber-400 bg-amber-400/10"
-                      : "border-slate-600 hover:border-amber-400/50"
-                  }`}>
-                  <input type="radio" name="payment" value="bank-transfer"
-                    checked={formData.paymentMethod === "bank-transfer"}
-                    onChange={() => setFormData(f => ({ ...f, paymentMethod: "bank-transfer" }))}
-                    className="w-4 h-4 accent-amber-400" />
-                  <span className="text-gray-300">🏦 โอนเงินผ่านธนาคารกรุงไทย (KTB)</span>
-                </div>
-                <div
-                  onClick={() => setFormData(f => ({ ...f, paymentMethod: "credit-card" }))}
-                  className={`flex items-center gap-3 p-3 rounded border cursor-pointer transition-all ${
-                    formData.paymentMethod === "credit-card"
-                      ? "border-amber-400 bg-amber-400/10"
-                      : "border-slate-600 hover:border-amber-400/50"
-                  }`}>
-                  <input type="radio" name="payment" value="credit-card"
-                    checked={formData.paymentMethod === "credit-card"}
-                    onChange={() => setFormData(f => ({ ...f, paymentMethod: "credit-card" }))}
-                    className="w-4 h-4 accent-amber-400" />
-                  <span className="text-gray-300">💳 บัตรเครดิต / เดบิต (Stripe)</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Payment Info — Bank Transfer */}
-            {formData.paymentMethod === "bank-transfer" && (
+            {/* Payment Info — Bank Transfer (only payment method) */}
+            <div>
+              <h3 className="text-amber-400 font-bold mb-3">💳 วิธีการชำระเงิน</h3>
               <div className="bg-gradient-to-br from-green-950/40 to-slate-800/60 border border-green-500/30 rounded-lg p-5 space-y-3">
                 <h3 className="text-green-400 font-bold flex items-center gap-2">🏦 ข้อมูลบัญชีธนาคาร</h3>
                 <div className="bg-slate-900/60 rounded-lg p-4 space-y-2 text-sm">
@@ -540,24 +478,10 @@ function CheckoutModal({ isOpen, onClose, cartItems, onConfirmOrder }: {
                 </div>
                 <p className="text-gray-400 text-xs">* กรุณาโอนเงินให้ตรงกับยอดที่แสดง และอัปโหลดสลิปด้านล่าง</p>
               </div>
-            )}
-
-            {/* Credit Card Info */}
-            {formData.paymentMethod === "credit-card" && (
-              <div className="bg-gradient-to-br from-blue-950/40 to-slate-800/60 border border-blue-500/30 rounded-lg p-5 space-y-3">
-                <h3 className="text-blue-400 font-bold flex items-center gap-2">💳 ชำระผ่าน Stripe</h3>
-                <p className="text-gray-300 text-sm">เมื่อกดยืนยัน ระบบจะพาคุณไปยังหน้าชำระเงิน Stripe ใน tab ใหม่ รองรับบัตรเครดิต / เดบิตทุกสถาบัน</p>
-                <div className="flex items-center gap-2 text-xs text-gray-400">
-                  <span>🔒 ปลอดภัย เข้ารหัส SSL</span>
-                  <span>•</span>
-                  <span>Visa / Mastercard / JCB</span>
-                </div>
-              </div>
-            )}
+            </div>
 
             {/* Slip Upload */}
-            {formData.paymentMethod === "bank-transfer" && (
-              <div className="space-y-3">
+            <div className="space-y-3">
                 <h3 className="text-amber-400 font-bold flex items-center gap-2">
                   <Upload size={18} /> อัปโหลดหลักฐานการโอนเงิน (สลิป) *
                 </h3>
@@ -614,8 +538,7 @@ function CheckoutModal({ isOpen, onClose, cartItems, onConfirmOrder }: {
                     </button>
                   </div>
                 )}
-              </div>
-            )}
+            </div>
 
             {/* Submit Button */}
             <Button
