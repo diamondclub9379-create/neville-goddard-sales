@@ -9,7 +9,7 @@ import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { calcVolumeDiscount, VOLUME_DISCOUNT_TIERS, STANDARD_SHIPPING_FEE, COMMUNITY_PATH } from "@shared/const";
+import { calcCartDiscount, VOLUME_DISCOUNT_TIERS, STANDARD_SHIPPING_FEE, COMMUNITY_PATH } from "@shared/const";
 import { useCart } from "@/contexts/CartContext";
 
 interface Book {
@@ -238,8 +238,12 @@ function CheckoutModal({ isOpen, onClose, cartItems, onConfirmOrder }: {
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.book.price * item.quantity, 0);
   const cartQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const volumeCalc = calcVolumeDiscount(subtotal, cartQuantity);
-  const { tier, discountPercent, discountAmount, shippingFee, total } = volumeCalc;
+  const cartCalc = calcCartDiscount(
+    subtotal,
+    cartQuantity,
+    cartItems.map(it => ({ unitPrice: it.book.price, quantity: it.quantity })),
+  );
+  const { promo, tier, discountPercent, discountAmount, shippingFee, total, freeUnits } = cartCalc;
 
   const handleFileSelect = useCallback((file: File) => {
     const allowed = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
@@ -403,8 +407,14 @@ function CheckoutModal({ isOpen, onClose, cartItems, onConfirmOrder }: {
                 </div>
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-green-400 text-sm">
-                    <span>ส่วนลด Volume {discountPercent}%:</span>
+                    <span>{`ส่วนลด Volume ${discountPercent}%:`}</span>
                     <span className="font-bold">-฿{discountAmount}</span>
+                  </div>
+                )}
+                {promo === "bogo" && freeUnits > 0 && (
+                  <div className="flex justify-between text-rose-300 text-sm bg-rose-400/10 border border-rose-400/30 rounded px-2 py-1.5">
+                    <span className="font-semibold">🎁 BOGO: ฟรีเพิ่ม {freeUnits} เล่ม!</span>
+                    <span className="text-xs text-rose-300/70">(จัดส่ง 2× ที่สั่ง)</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
@@ -864,7 +874,11 @@ export default function Home() {
     const total = formData.total ?? (() => {
       const subtotal = cartItems.reduce((sum, item) => sum + item.book.price * item.quantity, 0);
       const qty = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-      return calcVolumeDiscount(subtotal, qty).total;
+      return calcCartDiscount(
+        subtotal,
+        qty,
+        cartItems.map(it => ({ unitPrice: it.book.price, quantity: it.quantity })),
+      ).total;
     })();
     setOrderData({ ...formData, total });
     setIsCheckoutOpen(false);

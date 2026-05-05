@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { COOKIE_NAME, calcVolumeDiscount } from "@shared/const";
+import { COOKIE_NAME, calcCartDiscount } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
@@ -81,11 +81,16 @@ export const appRouter = router({
         const subtotal = input.items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
         // Total number of books across all items — used for quantity-based volume discount
         const totalQuantity = input.items.reduce((sum, item) => sum + item.quantity, 0);
-        // Server-side authoritative volume discount calculation
-        const volumeCalc = calcVolumeDiscount(subtotal, totalQuantity);
-        const discountAmount = volumeCalc.discountAmount;
-        const shippingFee = volumeCalc.shippingFee;
-        const discountTier = volumeCalc.tier;
+        // Server-side authoritative discount calculation. While the BOGO 5/5
+        // promo window is active this returns BOGO; otherwise standard volume tiers.
+        const cartCalc = calcCartDiscount(
+          subtotal,
+          totalQuantity,
+          input.items.map(i => ({ unitPrice: i.unitPrice, quantity: i.quantity })),
+        );
+        const discountAmount = cartCalc.discountAmount;
+        const shippingFee = cartCalc.shippingFee;
+        const discountTier = cartCalc.tier;
         const totalAmount = subtotal - discountAmount + shippingFee;
         const orderNumber = generateOrderNumber();
 

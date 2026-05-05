@@ -5,7 +5,8 @@ import { trpc } from "@/lib/trpc";
 import {
   VOLUME_DISCOUNT_TIERS,
   STANDARD_SHIPPING_FEE,
-  calcVolumeDiscount,
+  calcCartDiscount,
+  isBogoActive,
 } from "@shared/const";
 import {
   BookOpen,
@@ -34,7 +35,7 @@ interface PromoBook {
   detailPage?: string;
 }
 
-const FAQ = [
+const FAQ_VOLUME = [
   {
     q: "ส่วนลดคำนวณยังไง?",
     a: "ลดจากราคารวมในตะกร้า เช่น ซื้อ 2 เล่มราคารวม ฿1,000 → ลด 30% เหลือ ฿700 (+ค่าส่ง 50) ซื้อ 3 เล่มราคารวม ฿1,500 → ลด 35% เหลือ ฿975 (ส่งฟรี)",
@@ -54,6 +55,29 @@ const FAQ = [
   {
     q: "โปรนี้หมดอายุเมื่อไร?",
     a: "โปรหมุนทุก 24 ชั่วโมง — รีเซ็ตอัตโนมัติ ทันใจให้คุณตัดสินใจไม่พลาด!",
+  },
+];
+
+const FAQ_BOGO = [
+  {
+    q: "ซื้อ 1 แถม 1 คำนวณยังไง?",
+    a: "หยิบกี่เล่ม ได้ฟรีอีกเท่านั้นเลย! ซื้อ 1 เล่ม ฟรี 1 (ได้ทั้งหมด 2 เล่ม) — ซื้อ 2 ฟรี 2 (ได้ 4) — ซื้อ 3 ฟรี 3 (ได้ 6) จ่ายเท่าราคาที่หยิบ ส่งฟรีทุกออเดอร์!",
+  },
+  {
+    q: "เลือกหนังสือเล่มไหนก็ได้ไหม?",
+    a: "ได้ครับ ทุกเล่มในร้านเข้าโปรนี้หมด ผสมเล่มไหนก็ได้ ระบบจะจัดส่ง 2 เท่าของที่หยิบให้อัตโนมัติ",
+  },
+  {
+    q: "เล่มฟรีคือเล่มเดียวกับที่สั่งใช่ไหม?",
+    a: "ใช่ครับ ทุกเล่มที่หยิบลงตะกร้าจะได้รับเป็น 2 ก๊อปปี้ เช่น สั่ง A 1 เล่ม + B 1 เล่ม → จัดส่ง A 2 เล่ม + B 2 เล่ม รวม 4 เล่ม",
+  },
+  {
+    q: "ส่งฟรีจริงไหม?",
+    a: "ส่งฟรี EMS ทั่วประเทศ ไม่มีค่าส่งเพิ่มเติม ไม่ว่าจะสั่งกี่เล่มก็ตาม",
+  },
+  {
+    q: "โปรนี้หมดอายุเมื่อไร?",
+    a: "เฉพาะวันที่ 5 พฤษภาคม 2569 เท่านั้น (วันที่ 5/5) — สิ้นสุดเที่ยงคืน หมดแล้วหมดเลย",
   },
 ];
 
@@ -88,7 +112,15 @@ export default function Promotion() {
     return allBooks.reduce((sum, b) => sum + b.price * (selection[b.id] || 0), 0);
   }, [allBooks, selection]);
 
-  const calc = calcVolumeDiscount(selectedSubtotal, totalSelectedQty);
+  const calc = calcCartDiscount(
+    selectedSubtotal,
+    totalSelectedQty,
+    Object.entries(selection).map(([idStr, qty]) => {
+      const b = allBooks.find((book) => book.id === Number(idStr));
+      return { unitPrice: b?.price ?? 0, quantity: qty };
+    }),
+  );
+  const bogo = isBogoActive();
 
   const adjustQty = (bookId: number, delta: number) => {
     setSelection((prev) => {
@@ -132,7 +164,11 @@ export default function Promotion() {
     });
 
     toast.success(`เพิ่ม ${totalSelectedQty} เล่มลงตะกร้าแล้ว!`, {
-      description: calc.tier ? `ส่วนลด ${calc.discountPercent}% — ฿${calc.total.toLocaleString()}` : undefined,
+      description: calc.tier
+        ? bogo
+          ? `+ ฟรีอีก ${calc.freeUnits} เล่ม! ส่งฟรี — ฿${calc.total.toLocaleString()}`
+          : `ส่วนลด ${calc.discountPercent}% — ฿${calc.total.toLocaleString()}`
+        : undefined,
     });
     // Navigate to home + open checkout
     navigate("/?checkout=1");
@@ -155,71 +191,112 @@ export default function Promotion() {
       <section className="relative px-4 sm:px-6 lg:px-12 pt-12 pb-8 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-red-500/5 pointer-events-none" />
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full mb-5">
+          <div className={`inline-flex items-center gap-2 border text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full mb-5 ${
+            bogo
+              ? "bg-rose-500/10 border-rose-400/40 text-rose-300"
+              : "bg-red-500/10 border-red-500/30 text-red-400"
+          }`}>
             <Flame size={14} />
-            <span>โปรโมชั่นพิเศษ — มาแรงสุด!</span>
+            <span>{bogo ? "5/5 เท่านั้น — ซื้อ 1 แถม 1!" : "โปรโมชั่นพิเศษ — มาแรงสุด!"}</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4">
-            ซื้อ 2 เล่ม{" "}
-            <span className="bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-transparent">
-              ลด 30%
-            </span>
-            <br className="hidden sm:block" />{" "}
-            ซื้อ 3 เล่มขึ้นไป{" "}
-            <span className="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
-              ลด 35% + ส่งฟรี!
-            </span>
-          </h1>
+          {bogo ? (
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4">
+              ซื้อ 1{" "}
+              <span className="bg-gradient-to-r from-rose-300 to-pink-400 bg-clip-text text-transparent">
+                แถม 1
+              </span>
+              <br className="hidden sm:block" />{" "}
+              <span className="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
+                + ส่งฟรีทุกออเดอร์!
+              </span>
+            </h1>
+          ) : (
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4">
+              ซื้อ 2 เล่ม{" "}
+              <span className="bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-transparent">
+                ลด 30%
+              </span>
+              <br className="hidden sm:block" />{" "}
+              ซื้อ 3 เล่มขึ้นไป{" "}
+              <span className="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
+                ลด 35% + ส่งฟรี!
+              </span>
+            </h1>
+          )}
           <p className="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto mb-8">
-            เปลี่ยนชีวิตด้วยหนังสือ Neville Goddard ฉบับแปลไทย —
-            ผสมเล่มไหนก็ได้ ลดยิ่งซื้อมากยิ่งคุ้ม
+            {bogo
+              ? "ฉลอง 5/5 — ซื้อกี่เล่ม ได้ฟรีเท่านั้น! เราจัดส่งให้ 2 เท่าของที่สั่ง พร้อมส่งฟรี เฉพาะวันนี้!"
+              : "เปลี่ยนชีวิตด้วยหนังสือ Neville Goddard ฉบับแปลไทย — ผสมเล่มไหนก็ได้ ลดยิ่งซื้อมากยิ่งคุ้ม"}
           </p>
 
-          {/* 3-Tier showcase cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-3xl mx-auto">
-            {/* Tier 1 */}
-            <div className="bg-slate-800/40 border border-slate-700 rounded-xl p-5 backdrop-blur-sm">
-              <div className="text-3xl mb-2">📖</div>
-              <div className="text-gray-400 text-xs uppercase tracking-wider mb-1">
-                1 เล่ม
+          {/* Tier showcase cards */}
+          {bogo ? (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-3xl mx-auto">
+              <div className="bg-rose-400/10 border-2 border-rose-400/50 rounded-xl p-5 backdrop-blur-sm relative shadow-lg shadow-rose-500/15">
+                <div className="text-3xl mb-2">📖➕📖</div>
+                <div className="text-rose-300 text-xs uppercase tracking-wider mb-1 font-bold">ซื้อ 1 เล่ม</div>
+                <div className="text-white text-lg font-bold mb-1">ฟรี 1 เล่ม</div>
+                <div className="text-green-400 text-xs font-bold flex items-center justify-center gap-1">
+                  <Truck size={12} />
+                  ส่งฟรี!
+                </div>
               </div>
-              <div className="text-white text-lg font-bold mb-1">ราคาเต็ม</div>
-              <div className="text-gray-500 text-xs">
-                + ค่าส่ง ฿{STANDARD_SHIPPING_FEE}
+              <div className="bg-rose-400/10 border-2 border-rose-400/50 rounded-xl p-5 backdrop-blur-sm relative shadow-lg shadow-rose-500/15">
+                <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-rose-400 to-pink-400 text-slate-900 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">
+                  แนะนำ
+                </div>
+                <div className="text-3xl mb-2">📚📚📚📚</div>
+                <div className="text-rose-300 text-xs uppercase tracking-wider mb-1 font-bold">ซื้อ 2 เล่ม</div>
+                <div className="text-white text-lg font-bold mb-1">ฟรี 2 เล่ม</div>
+                <div className="text-green-400 text-xs font-bold flex items-center justify-center gap-1">
+                  <Truck size={12} />
+                  ส่งฟรี!
+                </div>
               </div>
-            </div>
-
-            {/* Tier 2 */}
-            <div className="bg-amber-400/10 border-2 border-amber-400/40 rounded-xl p-5 backdrop-blur-sm relative shadow-lg shadow-amber-500/10">
-              <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-amber-400 text-slate-900 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">
-                แนะนำ
-              </div>
-              <div className="text-3xl mb-2">📚</div>
-              <div className="text-amber-400 text-xs uppercase tracking-wider mb-1 font-bold">
-                2 เล่ม
-              </div>
-              <div className="text-white text-lg font-bold mb-1">ลด 30%</div>
-              <div className="text-gray-400 text-xs">
-                + ค่าส่ง ฿{STANDARD_SHIPPING_FEE}
-              </div>
-            </div>
-
-            {/* Tier 3 */}
-            <div className="bg-gradient-to-br from-yellow-400/15 to-orange-500/15 border-2 border-yellow-400/50 rounded-xl p-5 backdrop-blur-sm relative shadow-lg shadow-yellow-500/20">
-              <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-400 to-orange-400 text-slate-900 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">
-                คุ้มสุด
-              </div>
-              <div className="text-3xl mb-2">🎁</div>
-              <div className="text-yellow-300 text-xs uppercase tracking-wider mb-1 font-bold">
-                3 เล่มขึ้นไป
-              </div>
-              <div className="text-white text-lg font-bold mb-1">ลด 35%</div>
-              <div className="text-green-400 text-xs font-bold flex items-center justify-center gap-1">
-                <Truck size={12} />
-                ส่งฟรี!
+              <div className="bg-gradient-to-br from-yellow-400/15 to-orange-500/15 border-2 border-yellow-400/50 rounded-xl p-5 backdrop-blur-sm relative shadow-lg shadow-yellow-500/20">
+                <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-400 to-orange-400 text-slate-900 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">
+                  คุ้มสุด
+                </div>
+                <div className="text-3xl mb-2">🎁</div>
+                <div className="text-yellow-300 text-xs uppercase tracking-wider mb-1 font-bold">ซื้อ 3 เล่ม</div>
+                <div className="text-white text-lg font-bold mb-1">ฟรี 3 เล่ม</div>
+                <div className="text-green-400 text-xs font-bold flex items-center justify-center gap-1">
+                  <Truck size={12} />
+                  ส่งฟรี!
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-3xl mx-auto">
+              <div className="bg-slate-800/40 border border-slate-700 rounded-xl p-5 backdrop-blur-sm">
+                <div className="text-3xl mb-2">📖</div>
+                <div className="text-gray-400 text-xs uppercase tracking-wider mb-1">1 เล่ม</div>
+                <div className="text-white text-lg font-bold mb-1">ราคาเต็ม</div>
+                <div className="text-gray-500 text-xs">+ ค่าส่ง ฿{STANDARD_SHIPPING_FEE}</div>
+              </div>
+              <div className="bg-amber-400/10 border-2 border-amber-400/40 rounded-xl p-5 backdrop-blur-sm relative shadow-lg shadow-amber-500/10">
+                <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-amber-400 text-slate-900 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">
+                  แนะนำ
+                </div>
+                <div className="text-3xl mb-2">📚</div>
+                <div className="text-amber-400 text-xs uppercase tracking-wider mb-1 font-bold">2 เล่ม</div>
+                <div className="text-white text-lg font-bold mb-1">ลด 30%</div>
+                <div className="text-gray-400 text-xs">+ ค่าส่ง ฿{STANDARD_SHIPPING_FEE}</div>
+              </div>
+              <div className="bg-gradient-to-br from-yellow-400/15 to-orange-500/15 border-2 border-yellow-400/50 rounded-xl p-5 backdrop-blur-sm relative shadow-lg shadow-yellow-500/20">
+                <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-400 to-orange-400 text-slate-900 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">
+                  คุ้มสุด
+                </div>
+                <div className="text-3xl mb-2">🎁</div>
+                <div className="text-yellow-300 text-xs uppercase tracking-wider mb-1 font-bold">3 เล่มขึ้นไป</div>
+                <div className="text-white text-lg font-bold mb-1">ลด 35%</div>
+                <div className="text-green-400 text-xs font-bold flex items-center justify-center gap-1">
+                  <Truck size={12} />
+                  ส่งฟรี!
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -335,7 +412,7 @@ export default function Promotion() {
             คำถามที่พบบ่อย
           </h2>
           <div className="space-y-3">
-            {FAQ.map((item, i) => {
+            {(bogo ? FAQ_BOGO : FAQ_VOLUME).map((item, i) => {
               const isOpen = openFaq === i;
               return (
                 <div
@@ -378,12 +455,25 @@ export default function Promotion() {
                 <span className="font-bold">{totalSelectedQty} เล่ม</span>
               </div>
               {calc.tier && (
-                <div className="flex items-center gap-1.5 bg-amber-400/15 border border-amber-400/40 text-amber-400 px-2.5 py-1 rounded-full text-xs font-bold">
-                  <Percent size={11} />
-                  ลด {calc.discountPercent}%
+                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${
+                  bogo
+                    ? "bg-rose-400/15 border-rose-400/40 text-rose-300"
+                    : "bg-amber-400/15 border-amber-400/40 text-amber-400"
+                }`}>
+                  {bogo ? (
+                    <>
+                      <Gift size={11} />
+                      ฟรี {calc.freeUnits} เล่ม
+                    </>
+                  ) : (
+                    <>
+                      <Percent size={11} />
+                      ลด {calc.discountPercent}%
+                    </>
+                  )}
                   {calc.freeShipping && (
                     <>
-                      <span className="text-amber-400/50">•</span>
+                      <span className={bogo ? "text-rose-300/50" : "text-amber-400/50"}>•</span>
                       <Truck size={11} />
                       ส่งฟรี
                     </>
@@ -414,15 +504,27 @@ export default function Promotion() {
           </div>
 
           {/* Tier nudge */}
-          {!calc.tier && totalSelectedQty === 1 && (
-            <div className="bg-amber-400/10 border-t border-amber-400/20 text-amber-300 text-xs text-center py-1.5 px-4">
-              เพิ่มอีก 1 เล่ม → ลด 30% ทันที!
-            </div>
-          )}
-          {calc.tier === "Combo 30%" && (
-            <div className="bg-yellow-400/10 border-t border-yellow-400/20 text-yellow-300 text-xs text-center py-1.5 px-4">
-              เพิ่มอีก 1 เล่ม → ลด 35% + ส่งฟรี!
-            </div>
+          {bogo ? (
+            <>
+              {calc.tier && (
+                <div className="bg-rose-400/10 border-t border-rose-400/20 text-rose-300 text-xs text-center py-1.5 px-4">
+                  🎁 จะได้รับทั้งหมด {totalSelectedQty * 2} เล่ม ({totalSelectedQty} ซื้อ + {totalSelectedQty} ฟรี)
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              {!calc.tier && totalSelectedQty === 1 && (
+                <div className="bg-amber-400/10 border-t border-amber-400/20 text-amber-300 text-xs text-center py-1.5 px-4">
+                  เพิ่มอีก 1 เล่ม → ลด 30% ทันที!
+                </div>
+              )}
+              {calc.tier === "Combo 30%" && (
+                <div className="bg-yellow-400/10 border-t border-yellow-400/20 text-yellow-300 text-xs text-center py-1.5 px-4">
+                  เพิ่มอีก 1 เล่ม → ลด 35% + ส่งฟรี!
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
